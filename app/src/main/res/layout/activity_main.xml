@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121212">
+
+    <!-- Video Background -->
+    <VideoView
+        android:id="@+id/videoBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Dark Overlay for Readability -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000" />
+
+    <!-- Top Left Title -->
+    <TextView
+        android:id="@+id/logoText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SAARTHI"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.2"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="24dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Top Right Nav -->
+    <LinearLayout
+        android:id="@+id/topNav"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="WALLET"
+            android:textColor="#AAAAAA"
+            android:textSize="12sp"
+            android:letterSpacing="0.1"
+            android:layout_marginEnd="16dp"/>
+            
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CAB"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:letterSpacing="0.1"
+            android:layout_marginEnd="16dp"/>
+            
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="POLICE"
+            android:textColor="#AAAAAA"
+            android:textSize="12sp"
+            android:letterSpacing="0.1"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="32dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Subtitle -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• DIGITAL SAFETY INFRASTRUCTURE"
+            android:textColor="#8B85C1"
+            android:textSize="12sp"
+            android:letterSpacing="0.15"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Main Title (Refactored to one line) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SAARTHI"
+            android:textColor="#FFFFFF"
+            android:textSize="48sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.3"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Description -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PRIVACY-FIRST DIGITAL SAFETY INFRASTRUCTURE"
+            android:textColor="#AAAAAA"
+            android:textSize="14sp"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="32dp"/>
+            
+        <View
+            android:layout_width="60dp"
+            android:layout_height="1dp"
+            android:background="#555555"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Buttons Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="48dp">
+
+            <Button
+                android:id="@+id/launchCabBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LAUNCH CAB"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#6C5CE7"
+                app:cornerRadius="24dp"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="12dp"
+                android:layout_marginEnd="16dp"
+                android:textSize="12sp"
+                android:letterSpacing="0.1"
+                android:textStyle="bold"/>
+
+            <Button
+                android:id="@+id/openVaultBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OPEN IDENTITY VAULT"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#222222"
+                android:background="?android:attr/selectableItemBackground"
+                app:cornerRadius="24dp"
+                app:strokeColor="#555555"
+                app:strokeWidth="1dp"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="12dp"
+                android:textSize="12sp"
+                android:letterSpacing="0.1"
+                android:textStyle="bold"/>
+        </LinearLayout>
+        
+        <!-- Stats Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginEnd="32dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SHA-256"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ENCRYPTION"
+                    android:textColor="#666666"
+                    android:textSize="10sp"
+                    android:letterSpacing="0.1"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginEnd="32dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0ms"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DATA STORED"
+                    android:textColor="#666666"
+                    android:textSize="10sp"
+                    android:letterSpacing="0.1"/>
+            </LinearLayout>
+            
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="E2E"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CLIENT-SIDE"
+                    android:textColor="#666666"
+                    android:textSize="10sp"
+                    android:letterSpacing="0.1"/>
+            </LinearLayout>
+
+        </LinearLayout>
+        
+    </LinearLayout>
+    
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Red circle background -->
+    <path
+        android:fillColor="#FF4444"
+        android:pathData="M 54 10 C 31.9 10 14 27.9 14 50 C 14 72.1 31.9 90 54 90 C 76.1 90 94 72.1 94 50 C 94 27.9 76.1 10 54 10 Z" />
+    
+    <!-- White rectangle (exclamation mark stem) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 50 38 L 58 38 L 58 54 L 50 54 Z" />
+    
+    <!-- White dot (exclamation mark dot) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 50 60 L 58 60 L 58 68 L 50 68 Z" />
+</vector>
