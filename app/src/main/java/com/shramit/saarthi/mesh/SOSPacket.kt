@@ -115,7 +115,7 @@ data class SOSPacket(
         // 1. Header (13 Bytes)
         buffer.put(type)
         buffer.put(ttl.toByte())
-        buffer.putInt(messageId.hashCode())
+        buffer.putInt(stableMessageKey())
         buffer.put(senderFrag)
 
         // 2. Payload
@@ -131,6 +131,14 @@ data class SOSPacket(
         }
 
         return buffer.array()
+    }
+
+    /**
+     * Returns a stable integer key for this message across relay hops.
+     * If messageId is already numeric (decoded from header), keep it as-is.
+     */
+    fun stableMessageKey(): Int {
+        return messageId.toIntOrNull() ?: messageId.hashCode()
     }
 
     fun createRelayPacket(relayNodeId: String): SOSPacket? {

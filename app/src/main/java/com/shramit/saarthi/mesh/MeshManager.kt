@@ -201,7 +201,7 @@ class MeshManager(private val context: Context) {
             )
 
             // Mark as seen (don't relay our own packet back)
-            seenPackets[packet.messageId] = System.currentTimeMillis()
+            seenPackets[packet.stableMessageKey().toString()] = System.currentTimeMillis()
 
             val data = packet.toBytes()
 
@@ -257,8 +257,6 @@ class MeshManager(private val context: Context) {
             Log.d(TAG, "   Hop path: ${packet.hopPath.joinToString(" → ")}")
             Log.d(TAG, "   Hops taken: ${packet.hopCount}")
 
-            onSOSReceived?.invoke(packet)
-
             // Send acknowledgement back through mesh
             sendAcknowledgement(packet)
         } else {
@@ -295,7 +293,8 @@ class MeshManager(private val context: Context) {
      */
     private fun handleSOSAck(packet: SOSPacket) {
         Log.d(TAG, "✅ SOS Acknowledged by police for sender: ${packet.senderId}")
-        onSOSReceived?.invoke(packet)
+        // ACK is transport-level confirmation, not a new SOS alert for UI popups.
+        onMeshStatusChanged?.invoke("✅ SOS acknowledged by ${packet.senderId}")
     }
 
     /**
@@ -312,7 +311,7 @@ class MeshManager(private val context: Context) {
             isAcknowledgement = true
         )
 
-        seenPackets[ackPacket.messageId] = System.currentTimeMillis()
+        seenPackets[ackPacket.stableMessageKey().toString()] = System.currentTimeMillis()
         val data = ackPacket.toBytes()
         scanner.broadcastPacket(data)
         advertiser.queueOutboundPacket(data)

@@ -26,8 +26,6 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.events.MapEventsReceiver
-import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import java.util.UUID
 
@@ -43,7 +41,6 @@ class CabActivity : AppCompatActivity() {
     private lateinit var meshPeerCountText: TextView
     private lateinit var mapView: MapView
     private var myLocationMarker: Marker? = null
-    private var destinationMarker: Marker? = null
     private var isFirstFix = true
 
     private var userId: String = ""
@@ -72,34 +69,18 @@ class CabActivity : AppCompatActivity() {
         meshStatusText = findViewById(R.id.meshStatus)
         meshPeerCountText = findViewById(R.id.meshPeerCount)
         mapView = findViewById(R.id.mapView)
-        val searchInput = findViewById<android.widget.AutoCompleteTextView>(R.id.searchText)
-        
-        // Mocked suggestions for demo purposes (can integrate real Nominatim if needed)
-        val suggestions = arrayOf("Sector 62, Noida", "Connaught Place, Delhi", "Huda City Center, Gurgaon", "Indira Gandhi Airport")
-        val adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, suggestions)
-        searchInput.setAdapter(adapter)
-
-        findViewById<android.view.View>(R.id.goBtn).setOnClickListener {
-            val address = findViewById<android.widget.AutoCompleteTextView>(R.id.searchText).text.toString()
-            if (address.isNotEmpty()) {
-                // For now, still using mock offset but we move map to the "searched" area
-                setMockDestination()
-            } else {
-                Toast.makeText(this, "Please enter a destination", Toast.LENGTH_SHORT).show()
-            }
-        }
-        
-        findViewById<android.view.View>(R.id.triggerDeviationBtn).setOnClickListener {
-            showDeviationChoiceDialog()
-        }
 
         val sosButton = findViewById<CardView>(R.id.sosButton)
+        val isPoliceMode = isPoliceDevice()
+        if (isPoliceMode) {
+            sosButton.visibility = android.view.View.GONE
+        }
         
         // Initialize Map
         setupMap()
 
         // Set user ID and hidden toggle
-        userIdText.text = if (isPoliceDevice()) "POLICE_NODE" else userId
+        userIdText.text = if (isPoliceMode) "POLICE_NODE" else userId
         userIdText.setOnLongClickListener {
             togglePoliceMode()
             true
@@ -115,6 +96,7 @@ class CabActivity : AppCompatActivity() {
         // Initialize services
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         sosService = DirectSOSService(this)
+        setupSOSAlertListener()
 
         // Show initial status
         statusText.text = "🔍 Checking Bluetooth & Permissions..."
@@ -125,15 +107,20 @@ class CabActivity : AppCompatActivity() {
 
         // SOS button click
         sosButton.setOnClickListener {
-            checkLocationAndSendSOS()
+            if (isPoliceMode) {
+                Toast.makeText(this, "Police mode: SOS sending is disabled", Toast.LENGTH_SHORT).show()
+            } else {
+                checkLocationAndSendSOS()
+            }
         }
 
         // Trigger immediate location fix for startup zoom
         requestStartupLocation()
 
-        // Check if this device is police
-        if (isPoliceDevice()) {
+        if (isPoliceMode) {
             setupPoliceMode()
+        } else {
+            policeStatusText.text = "✅ Listening for SOS via mesh"
         }
     }
     
@@ -148,18 +135,6 @@ class CabActivity : AppCompatActivity() {
         val startPoint = GeoPoint(20.5937, 78.9629)
         mapController.setCenter(startPoint)
 
-        // Add Tap listener
-        val eventsOverlay = MapEventsOverlay(object : MapEventsReceiver {
-            override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
-                return false
-            }
-
-            override fun longPressHelper(p: GeoPoint): Boolean {
-                setDestination(p)
-                return true
-            }
-        })
-        mapView.overlays.add(eventsOverlay)
     }
 
     private fun requestStartupLocation() {
@@ -196,66 +171,6 @@ class CabActivity : AppCompatActivity() {
         mapView.invalidate()
     }
 
-    private fun setMockDestination() {
-        val currentCenter = mapView.mapCenter as GeoPoint
-        val destPoint = GeoPoint(currentCenter.latitude + 0.005, currentCenter.longitude + 0.005)
-        setDestination(destPoint)
-    }
-
-    private fun setDestination(geoPoint: GeoPoint) {
-        destinationMarker?.let { mapView.overlays.remove(it) }
-        destinationMarker = Marker(mapView)
-        destinationMarker?.position = geoPoint
-        destinationMarker?.title = "Destination"
-        destinationMarker?.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-        destinationMarker?.icon = ContextCompat.getDrawable(this, android.R.drawable.ic_menu_compass)
-        mapView.overlays.add(destinationMarker)
-        
-        // Zoom to destination
-        mapView.controller.animateTo(geoPoint)
-        mapView.controller.setZoom(17.0)
-        
-        mapView.invalidate()
-        showRideSelectionSheet()
-    }
-
-    private fun showRideSelectionSheet() {
-        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
-        val view = layoutInflater.inflate(R.layout.layout_ride_selection, null)
-        dialog.setContentView(view)
-        
-        val confirmBtn = view.findViewById<android.widget.Button>(R.id.confirmRideBtn)
-        
-        view.findViewById<androidx.cardview.widget.CardView>(R.id.rideMini).setOnClickListener { 
-            confirmBtn.isEnabled = true
-            confirmBtn.text = "Confirm Mini (₹55)"
-            confirmBtn.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#6C5CE7"))
-            confirmBtn.setTextColor(android.graphics.Color.WHITE)
-        }
-        
-        confirmBtn.setOnClickListener {
-            dialog.dismiss()
-            Toast.makeText(this, "Ride Started! Monitoring active.", Toast.LENGTH_LONG).show()
-        }
-        
-        dialog.show()
-    }
-
-    private fun showDeviationChoiceDialog() {
-        val choices = arrayOf("🚨 URGENT: SEND SOS", "📍 ADD MID-STOPPAGE (Official)")
-        AlertDialog.Builder(this)
-            .setTitle("Route Deviation Detected")
-            .setItems(choices) { _, which ->
-                if (which == 0) {
-                    checkLocationAndSendSOS()
-                } else {
-                    Toast.makeText(this, "Mid-stoppage authorized.", Toast.LENGTH_SHORT).show()
-                    showRideSelectionSheet()
-                }
-            }
-            .show()
-    }
-    
     private fun plotSOSOnMap(latitude: Double, longitude: Double, senderId: String, hops: Int) {
         val geoPoint = GeoPoint(latitude, longitude)
         
@@ -395,8 +310,10 @@ class CabActivity : AppCompatActivity() {
         // Change UI for police
         userIdText.text = "POLICE_${UUID.randomUUID().toString().substring(0, 8)}"
         findViewById<TextView>(R.id.userType).text = "Police Officer"
+        policeStatusText.text = "✅ Listening for SOS via mesh"
+    }
 
-        // Start listening for SOS via mesh
+    private fun setupSOSAlertListener() {
         sosService.startListeningForSOS { senderId, timestamp, lat, lon ->
             runOnUiThread {
                 // Create notification channel if needed (Android 8.0+)
@@ -466,8 +383,6 @@ class CabActivity : AppCompatActivity() {
                     .show()
             }
         }
-
-        policeStatusText.text = "✅ Listening for citizen SOS via mesh"
     }
 
     override fun onDestroy() {

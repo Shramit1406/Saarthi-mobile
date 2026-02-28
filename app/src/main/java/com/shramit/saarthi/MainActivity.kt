@@ -20,11 +20,6 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, CabActivity::class.java)
             startActivity(intent)
         }
-        
-        val openVaultBtn: Button = findViewById(R.id.openVaultBtn)
-        openVaultBtn.setOnClickListener {
-            // Placeholder for Open Identity Vault
-        }
     }
 
     private fun setupVideoBackground() {
